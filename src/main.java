@@ -28,22 +28,59 @@ public class main {
         PublicationLibrary library = new PublicationLibrary();
         // alphanumeric string
         String identifier = "ab570421";
-
+        String researchArea = "Computational Geometry";
         // Call for research Area
         Set<String> parentArea = new HashSet<>();
         parentArea.add("A");
         parentArea.add("B");
         parentArea.add("C");
-        library.addArea("Computational Geometry",parentArea);
+       // library.addArea(researchArea,parentArea);
 
         // call for publisherInformation
+        // introduce conference related information later
         Map<String,String> publisherInformation = new HashMap<>();
         publisherInformation.put("contact_name","Abhisha");
         publisherInformation.put("contact_email","ab@gmail.com");
         publisherInformation.put("location","NewYork");
-        library.addPublisher(identifier,publisherInformation);
-        //library.addPublisher();
+        //library.addPublisher(identifier,publisherInformation);
 
+        // if venueName == "Journal", then don't include location and conference year. If venueName == "Conference", then include
+        // location and conference year
+        // 2 tables = journal venue and conference venue
+        // Add Journal as the venueName
+        Map<String,String> venueInformation = new HashMap<>();
+//        venueInformation.put("publisher","1");
+        venueInformation.put("editor","editorName");
+        venueInformation.put("editor_contact","8128395206");
+        library.addVenue("journal",venueInformation,parentArea);
 
+        // Add Conference as the venueName
+
+      //  venueInformation.put("publisher","1");
+        venueInformation.put("editor","editorName");
+        venueInformation.put("editor_contact","8128395206");
+        venueInformation.put("location","New York");
+        venueInformation.put("conference_year","2017");
+       // library.addVenue("conference",venueInformation,parentArea);
+
+        // 2 tables = conferencePublication and JournalPublication
+        // add publication Information for Journals.
+     /*   Map<String,String> publicationInformationJ = new HashMap<>();
+        //Add authors
+        Set<String> authors = new HashSet<>();
+        authors.add("Abhisha Thaker");
+        authors.add("Meena Thaker");
+        authors.add("Nisha Thaker");
+        publicationInformationJ.put("authors", authors.toString());
+        publicationInformationJ.put("title","Advent of Artificial Intelligence");
+        publicationInformationJ.put("journal","The journal of Machine Learning");
+        publicationInformationJ.put("pages","pp. 67-72");
+        publicationInformationJ.put("volume","Vol 1");
+        publicationInformationJ.put("issue","issue 1");
+        publicationInformationJ.put("year","2017");
+        publicationInformationJ.put("month","December");
+
+        library.addPublication(identifier,publicationInformationJ);
+*/
     }
 }
