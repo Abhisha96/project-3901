@@ -37,15 +37,17 @@ public class PublicationLibrary {
             if(publicationInformation.containsKey("journal")) {
                 String ins_add_publication = "INSERT INTO journal_info " +
                         "(publication_id, authors, title, journal, pages, volume, issue, month, year) " +
-                        "VALUES( 1 ,'" + publicationInformation.get("authors") + "','" + publicationInformation.get("title") + "','"+publicationInformation.get("journal")+"','" + publicationInformation.get("pages") + "','" + publicationInformation.get("volume") + "','" + publicationInformation.get("issue") + "','" + publicationInformation.get("month") + "','" + publicationInformation.get("year") + "')";
+                        "VALUES( '"+identifier+"', '" + publicationInformation.get("authors") + "','" + publicationInformation.get("title") + "','"+publicationInformation.get("journal")+"','" + publicationInformation.get("pages") + "','" + publicationInformation.get("volume") + "','" + publicationInformation.get("issue") + "','" + publicationInformation.get("month") + "','" + publicationInformation.get("year") + "')";
                 int no_of_rows_changed = statement.executeUpdate(ins_add_publication);
                 System.out.println(no_of_rows_changed);
             } else if (publicationInformation.containsKey("conference")) {
                 String ins_add_publication = "INSERT INTO conference_info" +
-                        "(publication_id, authors, title, pages,volume, issue, month, year, conference_name, location_name)"+
-                        "VALUES(1,'"+publicationInformation.get("authors")+"','"+publicationInformation.get("title")+"','"+publicationInformation.get("pages")+"','"+publicationInformation.get("volume")+"','"+publicationInformation.get("issue")+"','"+publicationInformation.get("month")+"','"+publicationInformation.get("year")+"', '"+publicationInformation.get("conference_name")+"','"+publicationInformation.get("location_name")+"')";
+                        "(publication_id, authors, title, pages, month, year, conference_name, location_name)"+
+                        "VALUES('"+identifier+"','"+publicationInformation.get("authors")+"','"+publicationInformation.get("title")+"','"+publicationInformation.get("pages")+"','"+publicationInformation.get("year")+"', '"+publicationInformation.get("conference_name")+"','"+publicationInformation.get("location_name")+"')";
                 int no_of_rows_changed = statement.executeUpdate(ins_add_publication);
                 System.out.println(no_of_rows_changed);
+            }else {
+                //extend the code for adding books/web-articles(online) to the publication
             }
         }catch (SQLException e) {
             e.printStackTrace();
@@ -56,16 +58,16 @@ public class PublicationLibrary {
         return true;
     }
     /*
-    For the publication whose publication identifier is “identifier”, record that that paper references
-    all of the publications whose publication identifiers are in “references”.
-    Since the library is a growing entity, we may call addReferences multiple times for one research
-    paper as its references are added to the library and get publication identifiers. When called
-    repeatedly, later calls may or may not include previously-reported references.
-    Return true if the references have been added and false if the references are not added to the
-    library.
+        For the publication whose publication identifier is “identifier”, record that that paper references
+        all of the publications whose publication identifiers are in “references”.
+        Since the library is a growing entity, we may call addReferences multiple times for one research
+        paper as its references are added to the library and get publication identifiers. When called
+        repeatedly, later calls may or may not include previously-reported references.
+        Return true if the references have been added and false if the references are not added to the
+        library.
      */
     boolean addReferences ( String identifier, Set<String > references ){
-        
+
         return true;
     }
 
