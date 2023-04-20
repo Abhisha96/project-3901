@@ -1,8 +1,11 @@
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class main {
-    public static void main(String[] args){
+    public static void main(String[] args) throws SQLException {
         /*
         You will also write a main() method in a class of your choice that will convert citations in a
         paper into actual IEEE references.
@@ -23,12 +26,24 @@ public class main {
          */
 
         PublicationLibrary library = new PublicationLibrary();
+        // alphanumeric string
+        String identifier = "ab570421";
+
+        // Call for research Area
         Set<String> parentArea = new HashSet<>();
         parentArea.add("A");
         parentArea.add("B");
         parentArea.add("C");
         library.addArea("Computational Geometry",parentArea);
 
+        // call for publisherInformation
+        Map<String,String> publisherInformation = new HashMap<>();
+        publisherInformation.put("contact_name","Abhisha");
+        publisherInformation.put("contact_email","ab@gmail.com");
+        publisherInformation.put("location","NewYork");
+        library.addPublisher(identifier,publisherInformation);
         //library.addPublisher();
+
+
     }
 }
