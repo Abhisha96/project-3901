@@ -1,11 +1,9 @@
+import java.sql.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.DriverManager;
 import java.util.Properties;
 
 public class PublicationLibrary {
@@ -13,6 +11,9 @@ public class PublicationLibrary {
     Connection connect = null;
     Statement statement = null;
     ResultSet resultSet = null;
+
+    private Map<String,Set> researchAreas = new HashMap<>();
+
     /*
     Add a publication to the library. All the publication information is in the Map where the Map
     keys are the type of information and the Map values are the actual information. Expected Map
@@ -22,6 +23,14 @@ public class PublicationLibrary {
     Return true if the publication has been added and false if the publication is not added to the
     library.
     */
+    void databaseConnector() throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        connect = DriverManager.getConnection("jdbc:mysql://db.cs.dal.ca:3306?serverTimezone=UTC&useSSL=false", "athaker", "B00937694" );
+        statement = connect.createStatement();
+        statement.execute("use athaker;");
+    }
+
     boolean addPublication ( String identifier, Map<String, String> publicationInformation ){
         return true;
     }
@@ -66,9 +75,25 @@ public class PublicationLibrary {
     research areas, as provided by the parentArea set.
     Return true if the research area has been added and false if the area is not added to the library.
      */
-    boolean addArea ( String researchArea, Set<String> parentArea )
-    {
-        return true;
+    boolean addArea ( String researchArea, Set<String> parentArea )  {
+        try {
+            databaseConnector();
+            if (researchArea == null || parentArea == null)
+                return false;
+
+            if (!researchArea.isEmpty() && !parentArea.isEmpty()) {
+                String ins_researchArea = "INSERT INTO research_areas (researchArea, parentArea) VALUES ('"+researchArea +"', '"+parentArea+"')";
+                int no_of_rows_changed = statement.executeUpdate(ins_researchArea);
+                System.out.println(no_of_rows_changed);
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
     }
     /*
     Return a map of all the information the library currently stores on a specific publication, as
