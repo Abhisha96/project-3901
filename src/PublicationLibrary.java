@@ -65,15 +65,41 @@ public class PublicationLibrary {
     Return true if the publisher has been added and false if the publisher is not added to the
     library.
      */
-    boolean addPublisher ( String identifier, Map<String, String> publisherInformation )
-    {
-        return true;
+    /*
+    To do for later
+    1. Ensure the publisher_id autoincrements
+    2. identifier - as a foreign key to publication table
+     */
+    boolean addPublisher ( String identifier, Map<String, String> publisherInformation )  {
+        if(identifier == null || publisherInformation == null)
+            return false;
+        try {
+            databaseConnector();
+            if (!publisherInformation.isEmpty() && !identifier.isEmpty()) {
+                String ins_publisher_info = "INSERT INTO publisher_info (publisher_id, contact_name, contact_email, location, identifier ) " +
+                        "VALUES (1, '"+publisherInformation.get("contact_name")+"','"+publisherInformation.get("contact_email")+"','"+publisherInformation.get("location")+"','"+identifier+"')";
+                int no_of_rows_changed = statement.executeUpdate(ins_publisher_info);
+                System.out.println(no_of_rows_changed);
+                System.out.println();
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /*
     Add a research area to the library. The research area may be a subset of zero or more other
     research areas, as provided by the parentArea set.
     Return true if the research area has been added and false if the area is not added to the library.
+     */
+    /*
+    1. ensure the elements added in the database are not duplicated.
+    2. identifier as a foreign key to publication table
      */
     boolean addArea ( String researchArea, Set<String> parentArea )  {
         try {
