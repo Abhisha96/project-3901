@@ -32,6 +32,27 @@ public class PublicationLibrary {
     }
 
     boolean addPublication ( String identifier, Map<String, String> publicationInformation ){
+        try{
+            databaseConnector();
+            if(publicationInformation.containsKey("journal")) {
+                String ins_add_publication = "INSERT INTO journal_info " +
+                        "(publication_id, authors, title, journal, pages, volume, issue, month, year) " +
+                        "VALUES( 1 ,'" + publicationInformation.get("authors") + "','" + publicationInformation.get("title") + "','"+publicationInformation.get("journal")+"','" + publicationInformation.get("pages") + "','" + publicationInformation.get("volume") + "','" + publicationInformation.get("issue") + "','" + publicationInformation.get("month") + "','" + publicationInformation.get("year") + "')";
+                int no_of_rows_changed = statement.executeUpdate(ins_add_publication);
+                System.out.println(no_of_rows_changed);
+            } else if (publicationInformation.containsKey("conference")) {
+                String ins_add_publication = "INSERT INTO conference_info" +
+                        "(publication_id, authors, title, pages,volume, issue, month, year, conference_name, location_name)"+
+                        "VALUES(1,'"+publicationInformation.get("authors")+"','"+publicationInformation.get("title")+"','"+publicationInformation.get("pages")+"','"+publicationInformation.get("volume")+"','"+publicationInformation.get("issue")+"','"+publicationInformation.get("month")+"','"+publicationInformation.get("year")+"', '"+publicationInformation.get("conference_name")+"','"+publicationInformation.get("location_name")+"')";
+                int no_of_rows_changed = statement.executeUpdate(ins_add_publication);
+                System.out.println(no_of_rows_changed);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         return true;
     }
     /*
@@ -44,7 +65,8 @@ public class PublicationLibrary {
     library.
      */
     boolean addReferences ( String identifier, Set<String > references ){
-     return true;
+        
+        return true;
     }
 
     /*
@@ -56,6 +78,8 @@ public class PublicationLibrary {
      */
     boolean addVenue (String venueName, Map<String, String> venueInformation, Set<String>
             researchAreas) {
+        if(venueName == null || venueInformation == null || researchAreas == null)
+            return false;
         if (venueName == "journal" || venueName == "conference") {
             try {
                 databaseConnector();
@@ -66,10 +90,10 @@ public class PublicationLibrary {
                         int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
                         System.out.println(no_of_rows_changed);
                     } else if (venueName == "conference") {
-                        //String ins_venue_info = "INSERT INTO venue_info (venueName, publisher_id, editor_name, editor_contact, location, conference_year) " +
-                        //      "VALUES('"+ venueInformation.get("venueName")+"', 4 ,'" + venueInformation.get("editor_name") + "','"+venueInformation.get("editor_contact")+"', '"+venueInformation.get("location")+"','"+venueInformation.get("conference_year")+"')";
-                        // int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
-                        // System.out.println(no_of_rows_changed);
+                        String ins_venue_info = "INSERT INTO venue_info (venueName, publisher_id, editor_name, editor_contact, location, conference_year) " +
+                              "VALUES('"+ venueInformation.get("venueName")+"', 4 ,'" + venueInformation.get("editor_name") + "','"+venueInformation.get("editor_contact")+"', '"+venueInformation.get("location")+"','"+venueInformation.get("conference_year")+"')";
+                        int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
+                        System.out.println(no_of_rows_changed);
                     } else {
                         //think of the other usecases
                     }
