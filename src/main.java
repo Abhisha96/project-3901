@@ -65,22 +65,21 @@ public class main {
 
         // 2 tables = conferencePublication and JournalPublication
         // add publication Information for Journals.
-     /*   Map<String,String> publicationInformationJ = new HashMap<>();
+        Map<String,String> publicationInformation = new HashMap<>();
         //Add authors
         Set<String> authors = new HashSet<>();
         authors.add("Abhisha Thaker");
         authors.add("Meena Thaker");
         authors.add("Nisha Thaker");
-        publicationInformationJ.put("authors", authors.toString());
-        publicationInformationJ.put("title","Advent of Artificial Intelligence");
-        publicationInformationJ.put("journal","The journal of Machine Learning");
-        publicationInformationJ.put("pages","pp. 67-72");
-        publicationInformationJ.put("volume","Vol 1");
-        publicationInformationJ.put("issue","issue 1");
-        publicationInformationJ.put("year","2017");
-        publicationInformationJ.put("month","December");
+        publicationInformation.put("authors", authors.toString());
+        publicationInformation.put("title","Advent of Artificial Intelligence");
+        publicationInformation.put("journal","The journal of Machine Learning");
+        publicationInformation.put("pages","pp. 67-72");
+        publicationInformation.put("volume","Vol 1");
+        publicationInformation.put("issue","issue 1");
+        publicationInformation.put("year","2017");
+        publicationInformation.put("month","December");
 
-        library.addPublication(identifier,publicationInformationJ);
-*/
+        library.addPublication(identifier,publicationInformation);
     }
 }
