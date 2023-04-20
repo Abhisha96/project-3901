@@ -1,3 +1,6 @@
+import java.util.HashSet;
+import java.util.Set;
+
 public class main {
     public static void main(String[] args){
         /*
@@ -20,6 +23,12 @@ public class main {
          */
 
         PublicationLibrary library = new PublicationLibrary();
-        library.addArea()
+        Set<String> parentArea = new HashSet<>();
+        parentArea.add("A");
+        parentArea.add("B");
+        parentArea.add("C");
+        library.addArea("Computational Geometry",parentArea);
+
+        //library.addPublisher();
     }
 }
