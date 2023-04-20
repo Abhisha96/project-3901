@@ -54,9 +54,38 @@ public class PublicationLibrary {
     conference_year, although not all of these keys will appear for each publication.
     Return true if the venue has been added and false if the venue is not added to the library.
      */
-    boolean addVenue ( String venueName, Map<String, String> venueInformation, Set<String>
-            researchAreas ){
-        return true;
+    boolean addVenue (String venueName, Map<String, String> venueInformation, Set<String>
+            researchAreas) {
+        if (venueName == "journal" || venueName == "conference") {
+            try {
+                databaseConnector();
+                if (!venueInformation.isEmpty() && !researchAreas.isEmpty() && !venueName.isEmpty()) {
+                    if (venueName == "journal") {
+                        String ins_venue_info = "INSERT INTO venue_info (venueName, publisher_id, editor_name, editor_contact) " +
+                                "VALUES('" +venueName+ "', 1 ,'" + venueInformation.get("editor_name") + "','" + venueInformation.get("editor_contact") + "')";
+                        int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
+                        System.out.println(no_of_rows_changed);
+                    } else if (venueName == "conference") {
+                        //String ins_venue_info = "INSERT INTO venue_info (venueName, publisher_id, editor_name, editor_contact, location, conference_year) " +
+                        //      "VALUES('"+ venueInformation.get("venueName")+"', 4 ,'" + venueInformation.get("editor_name") + "','"+venueInformation.get("editor_contact")+"', '"+venueInformation.get("location")+"','"+venueInformation.get("conference_year")+"')";
+                        // int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
+                        // System.out.println(no_of_rows_changed);
+                    } else {
+                        //think of the other usecases
+                    }
+
+                    System.out.println();
+                    return true;
+                }
+                return false;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
     }
     /*
     Add a publisher to the library. All the publisher information is in the Map where the Map keys
