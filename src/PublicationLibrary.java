@@ -1,10 +1,5 @@
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Properties;
+import java.util.*;
 
 public class PublicationLibrary {
 
@@ -13,8 +8,10 @@ public class PublicationLibrary {
     ResultSet resultSet = null;
 
     private Map<String,Set> researchAreas = new HashMap<>();
-    int reference_id = 1;
-    int publisher_id = 1;
+    int reference_id;
+    int publisher_id;
+
+    private Map<String,String> getPublicationsInfo = new HashMap<>();
 
     /*
     Add a publication to the library. All the publication information is in the Map where the Map
@@ -28,7 +25,10 @@ public class PublicationLibrary {
     void databaseConnector()  {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connect = DriverManager.getConnection("jdbc:mysql://db.cs.dal.ca:3306?serverTimezone=UTC&useSSL=false", "athaker", "B00937694");
+            Scanner sc = new Scanner(System.in);
+            String username = sc.next();
+            String password = sc.next();
+            connect = DriverManager.getConnection("jdbc:mysql://db.cs.dal.ca:3306?serverTimezone=UTC&useSSL=false", username, password);
             statement = connect.createStatement();
             statement.execute("use athaker;");
         }catch(SQLException e){
@@ -47,26 +47,22 @@ public class PublicationLibrary {
                         "(publication_id, authors, title, journal, pages, volume, issue, month, year) " +
                         "VALUES( '"+identifier+"', '" + publicationInformation.get("authors") + "','" + publicationInformation.get("title") + "','"+publicationInformation.get("journal")+"','" + publicationInformation.get("pages") + "','" + publicationInformation.get("volume") + "','" + publicationInformation.get("issue") + "','" + publicationInformation.get("month") + "','" + publicationInformation.get("year") + "')";
                 int no_of_rows_changed = statement.executeUpdate(ins_add_publication);
-                System.out.println(no_of_rows_changed);
                 if(no_of_rows_changed == 1){
-                    String ins_publication_type = "INSERT INTO publication_type"+
+                    String ins_publication_type = "INSERT INTO publicationtype"+
                             "(publication_id,publication_type)" +
                             "VALUES('"+identifier+"',journal)";
                     int row_changed = statement.executeUpdate(ins_publication_type);
-                    System.out.println(row_changed);
                 }
             } else if (publicationInformation.containsKey("conference")) {
                 String ins_add_publication = "INSERT INTO conference_info" +
                         "(publication_id, authors, title, pages, month, year, conference_name, location_name)"+
                         "VALUES('"+identifier+"','"+publicationInformation.get("authors")+"','"+publicationInformation.get("title")+"','"+publicationInformation.get("pages")+"','"+publicationInformation.get("year")+"', '"+publicationInformation.get("conference_name")+"','"+publicationInformation.get("location_name")+"')";
                 int no_of_rows_changed = statement.executeUpdate(ins_add_publication);
-                System.out.println(no_of_rows_changed);
                 if(no_of_rows_changed == 1) {
-                    String ins_publication_type = "INSERT INTO publication_type" +
+                    String ins_publication_type = "INSERT INTO publicationtype" +
                             "(publication_id,publication_type)" +
                             "VALUES('" + identifier + "',conference)";
                     int row_changed = statement.executeUpdate(ins_publication_type);
-                    System.out.println(row_changed);
                 }
             }else {
                 //extend the code for adding books/web-articles(online) to the publication
@@ -97,12 +93,8 @@ public class PublicationLibrary {
             databaseConnector();
             String ins_add_references = "INSERT INTO publication_references " +
                     "(reference_id, publication_id, reference_set) " +
-                    "VALUES( '"+reference_id+"', '"+identifier+"','"+references+"')";
+                    "VALUES( , '"+identifier+"','"+references+"')";
             int no_of_rows_changed = statement.executeUpdate(ins_add_references);
-            if(no_of_rows_changed == 1){
-                reference_id++;
-            }
-            System.out.println(no_of_rows_changed);
         }
         catch(SQLException e){
             e.printStackTrace();
@@ -129,20 +121,12 @@ public class PublicationLibrary {
                 if (!venueInformation.isEmpty() && !researchAreas.isEmpty() && !venueName.isEmpty()) {
                     if (venueName == "journal") {
                         String ins_venue_info = "INSERT INTO venue_info (venueName, publisher_id, editor_name, editor_contact) " +
-                                "VALUES('" +venueName+ "', '"+publisher_id+"','" + venueInformation.get("editor_name") + "','" + venueInformation.get("editor_contact") + "')";
+                                "VALUES('" +venueName+ "', ,'" + venueInformation.get("editor_name") + "','" + venueInformation.get("editor_contact") + "')";
                         int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
-                        if(no_of_rows_changed == 1){
-                            publisher_id++;
-                        }
-                        System.out.println(no_of_rows_changed);
                     } else if (venueName == "conference") {
                         String ins_venue_info = "INSERT INTO venue_info (venueName, publisher_id, editor_name, editor_contact, location, conference_year) " +
-                              "VALUES('"+ venueInformation.get("venueName")+"', '"+publisher_id+"' ,'" + venueInformation.get("editor_name") + "','"+venueInformation.get("editor_contact")+"', '"+venueInformation.get("location")+"','"+venueInformation.get("conference_year")+"')";
+                              "VALUES('"+ venueInformation.get("venueName")+"',  ,'" + venueInformation.get("editor_name") + "','"+venueInformation.get("editor_contact")+"', '"+venueInformation.get("location")+"','"+venueInformation.get("conference_year")+"')";
                         int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
-                        if(no_of_rows_changed == 1){
-                            publisher_id++;
-                        }
-                        System.out.println(no_of_rows_changed);
                     } else {
                         //think of the other usecases
                     }
@@ -180,9 +164,6 @@ public class PublicationLibrary {
                         "VALUES ('"+publisher_id+"', '"+publisherInformation.get("contact_name")+"','"+publisherInformation.get("contact_email")+"','"+publisherInformation.get("location")+"','"+identifier+"')";
                 int no_of_rows_changed = statement.executeUpdate(ins_publisher_info);
                 System.out.println(no_of_rows_changed);
-                if(no_of_rows_changed == 1){
-                    publisher_id++;
-                }
                 System.out.println();
                 return true;
             }
@@ -226,11 +207,41 @@ public class PublicationLibrary {
     Map key of “references” and a comma separated string of all the publication identifiers cited by
     the article.
      */
-    Map<String, String> getPublications ( String key )
-    {
+    Map<String, String> getPublications ( String key ) throws SQLException {
+
         if(key == null || key.isEmpty()){
             return null;
         }
+
+        databaseConnector();
+
+        resultSet = statement.executeQuery("select * from journal_info where publication_id = '"+key+"'");
+        while(resultSet.next()){
+            getPublicationsInfo.put("authors",resultSet.getString("authors"));
+            getPublicationsInfo.put("title",resultSet.getString("title"));
+            getPublicationsInfo.put("journal",resultSet.getString("journal"));
+            getPublicationsInfo.put("pages",resultSet.getString("pages"));
+            getPublicationsInfo.put("volume",resultSet.getString("volume"));
+            getPublicationsInfo.put("issue",resultSet.getString("issue"));
+            getPublicationsInfo.put("month",resultSet.getString("month"));
+            getPublicationsInfo.put("year",resultSet.getString("year"));
+        }
+        ResultSet resultSet1 = statement.executeQuery("select * from conference_info where publication_id = '"+key+"'");
+        while(resultSet1.next()){
+            getPublicationsInfo.put("authors",resultSet1.getString("authors"));
+            getPublicationsInfo.put("title",resultSet1.getString("title"));
+            getPublicationsInfo.put("pages",resultSet1.getString("pages"));
+            getPublicationsInfo.put("year",resultSet1.getString("year"));
+            getPublicationsInfo.put("conference_name",resultSet1.getString("conference_name"));
+            getPublicationsInfo.put("location_name",resultSet1.getString("location_name"));
+        }
+
+        ResultSet resultSet2 = statement.executeQuery("select * from publication_references where publication_id = '"+key+"'");
+
+        while(resultSet2.next()){
+            getPublicationsInfo.put("reference_set",resultSet2.getString("reference_set"));
+        }
+
         return null;
     }
     /*
