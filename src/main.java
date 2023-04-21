@@ -27,14 +27,14 @@ public class main {
 
         PublicationLibrary library = new PublicationLibrary();
         // alphanumeric string
-        String identifier = "ab570421";
+        String identifier = "ab570424";
         String researchArea = "Computational Geometry";
         // Call for research Area
         Set<String> parentArea = new HashSet<>();
         parentArea.add("A");
         parentArea.add("B");
         parentArea.add("C");
-       // library.addArea(researchArea,parentArea);
+        library.addArea(researchArea,parentArea);
 
         // call for publisherInformation
         // introduce conference related information later
@@ -42,7 +42,7 @@ public class main {
         publisherInformation.put("contact_name","Abhisha");
         publisherInformation.put("contact_email","ab@gmail.com");
         publisherInformation.put("location","NewYork");
-        //library.addPublisher(identifier,publisherInformation);
+        library.addPublisher(identifier,publisherInformation);
 
         // if venueName == "Journal", then don't include location and conference year. If venueName == "Conference", then include
         // location and conference year
@@ -61,7 +61,7 @@ public class main {
         venueInformation.put("editor_contact","8128395206");
         venueInformation.put("location","New York");
         venueInformation.put("conference_year","2017");
-       // library.addVenue("conference",venueInformation,parentArea);
+        library.addVenue("conference",venueInformation,parentArea);
 
         // 2 tables = conferencePublication and JournalPublication
         // add publication Information for Journals.
@@ -89,5 +89,7 @@ public class main {
         references.add("ccc");
 
         library.addReferences(identifier,references);
+
+        library.getPublications(identifier);
     }
 }
