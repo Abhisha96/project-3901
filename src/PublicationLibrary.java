@@ -30,7 +30,7 @@ public class PublicationLibrary {
             String password = sc.next();
             connect = DriverManager.getConnection("jdbc:mysql://db.cs.dal.ca:3306?serverTimezone=UTC&useSSL=false", username, password);
             statement = connect.createStatement();
-            statement.execute("use athaker;");
+            statement.execute("use athaker");
         }catch(SQLException e){
             throw new RuntimeException(e);
         }
