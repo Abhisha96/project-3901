@@ -81,5 +81,13 @@ public class main {
         publicationInformation.put("month","December");
 
         library.addPublication(identifier,publicationInformation);
+
+        //add references
+        Set<String> references = new HashSet<>();
+        references.add("aaa");
+        references.add("bbb");
+        references.add("ccc");
+
+        library.addReferences(identifier,references);
     }
 }
