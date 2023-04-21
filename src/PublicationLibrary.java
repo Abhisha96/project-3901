@@ -13,6 +13,8 @@ public class PublicationLibrary {
     ResultSet resultSet = null;
 
     private Map<String,Set> researchAreas = new HashMap<>();
+    int reference_id = 1;
+    int publisher_id = 1;
 
     /*
     Add a publication to the library. All the publication information is in the Map where the Map
@@ -23,12 +25,18 @@ public class PublicationLibrary {
     Return true if the publication has been added and false if the publication is not added to the
     library.
     */
-    void databaseConnector() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-
-        connect = DriverManager.getConnection("jdbc:mysql://db.cs.dal.ca:3306?serverTimezone=UTC&useSSL=false", "athaker", "B00937694" );
-        statement = connect.createStatement();
-        statement.execute("use athaker;");
+    void databaseConnector()  {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connect = DriverManager.getConnection("jdbc:mysql://db.cs.dal.ca:3306?serverTimezone=UTC&useSSL=false", "athaker", "B00937694");
+            statement = connect.createStatement();
+            statement.execute("use athaker;");
+        }catch(SQLException e){
+            throw new RuntimeException(e);
+        }
+        catch(ClassNotFoundException e){
+            throw new RuntimeException(e);
+        }
     }
 
     boolean addPublication ( String identifier, Map<String, String> publicationInformation ){
@@ -40,19 +48,31 @@ public class PublicationLibrary {
                         "VALUES( '"+identifier+"', '" + publicationInformation.get("authors") + "','" + publicationInformation.get("title") + "','"+publicationInformation.get("journal")+"','" + publicationInformation.get("pages") + "','" + publicationInformation.get("volume") + "','" + publicationInformation.get("issue") + "','" + publicationInformation.get("month") + "','" + publicationInformation.get("year") + "')";
                 int no_of_rows_changed = statement.executeUpdate(ins_add_publication);
                 System.out.println(no_of_rows_changed);
+                if(no_of_rows_changed == 1){
+                    String ins_publication_type = "INSERT INTO publication_type"+
+                            "(publication_id,publication_type)" +
+                            "VALUES('"+identifier+"',journal)";
+                    int row_changed = statement.executeUpdate(ins_publication_type);
+                    System.out.println(row_changed);
+                }
             } else if (publicationInformation.containsKey("conference")) {
                 String ins_add_publication = "INSERT INTO conference_info" +
                         "(publication_id, authors, title, pages, month, year, conference_name, location_name)"+
                         "VALUES('"+identifier+"','"+publicationInformation.get("authors")+"','"+publicationInformation.get("title")+"','"+publicationInformation.get("pages")+"','"+publicationInformation.get("year")+"', '"+publicationInformation.get("conference_name")+"','"+publicationInformation.get("location_name")+"')";
                 int no_of_rows_changed = statement.executeUpdate(ins_add_publication);
                 System.out.println(no_of_rows_changed);
+                if(no_of_rows_changed == 1) {
+                    String ins_publication_type = "INSERT INTO publication_type" +
+                            "(publication_id,publication_type)" +
+                            "VALUES('" + identifier + "',conference)";
+                    int row_changed = statement.executeUpdate(ins_publication_type);
+                    System.out.println(row_changed);
+                }
             }else {
                 //extend the code for adding books/web-articles(online) to the publication
             }
         }catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         return true;
@@ -67,6 +87,27 @@ public class PublicationLibrary {
         library.
      */
     boolean addReferences ( String identifier, Set<String > references ){
+        if(identifier == null || references == null){
+            return false;
+        }
+        if(identifier.isEmpty() || references.isEmpty()){
+            return false;
+        }
+        try {
+            databaseConnector();
+            String ins_add_references = "INSERT INTO publication_references " +
+                    "(reference_id, publication_id, reference_set) " +
+                    "VALUES( '"+reference_id+"', '"+identifier+"','"+references+"')";
+            int no_of_rows_changed = statement.executeUpdate(ins_add_references);
+            if(no_of_rows_changed == 1){
+                reference_id++;
+            }
+            System.out.println(no_of_rows_changed);
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
 
         return true;
     }
@@ -88,13 +129,19 @@ public class PublicationLibrary {
                 if (!venueInformation.isEmpty() && !researchAreas.isEmpty() && !venueName.isEmpty()) {
                     if (venueName == "journal") {
                         String ins_venue_info = "INSERT INTO venue_info (venueName, publisher_id, editor_name, editor_contact) " +
-                                "VALUES('" +venueName+ "', 1 ,'" + venueInformation.get("editor_name") + "','" + venueInformation.get("editor_contact") + "')";
+                                "VALUES('" +venueName+ "', '"+publisher_id+"','" + venueInformation.get("editor_name") + "','" + venueInformation.get("editor_contact") + "')";
                         int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
+                        if(no_of_rows_changed == 1){
+                            publisher_id++;
+                        }
                         System.out.println(no_of_rows_changed);
                     } else if (venueName == "conference") {
                         String ins_venue_info = "INSERT INTO venue_info (venueName, publisher_id, editor_name, editor_contact, location, conference_year) " +
-                              "VALUES('"+ venueInformation.get("venueName")+"', 4 ,'" + venueInformation.get("editor_name") + "','"+venueInformation.get("editor_contact")+"', '"+venueInformation.get("location")+"','"+venueInformation.get("conference_year")+"')";
+                              "VALUES('"+ venueInformation.get("venueName")+"', '"+publisher_id+"' ,'" + venueInformation.get("editor_name") + "','"+venueInformation.get("editor_contact")+"', '"+venueInformation.get("location")+"','"+venueInformation.get("conference_year")+"')";
                         int no_of_rows_changed = statement.executeUpdate(ins_venue_info);
+                        if(no_of_rows_changed == 1){
+                            publisher_id++;
+                        }
                         System.out.println(no_of_rows_changed);
                     } else {
                         //think of the other usecases
@@ -106,8 +153,6 @@ public class PublicationLibrary {
                 return false;
             } catch (SQLException e) {
                 e.printStackTrace();
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -132,17 +177,18 @@ public class PublicationLibrary {
             databaseConnector();
             if (!publisherInformation.isEmpty() && !identifier.isEmpty()) {
                 String ins_publisher_info = "INSERT INTO publisher_info (publisher_id, contact_name, contact_email, location, identifier ) " +
-                        "VALUES (1, '"+publisherInformation.get("contact_name")+"','"+publisherInformation.get("contact_email")+"','"+publisherInformation.get("location")+"','"+identifier+"')";
+                        "VALUES ('"+publisher_id+"', '"+publisherInformation.get("contact_name")+"','"+publisherInformation.get("contact_email")+"','"+publisherInformation.get("location")+"','"+identifier+"')";
                 int no_of_rows_changed = statement.executeUpdate(ins_publisher_info);
                 System.out.println(no_of_rows_changed);
+                if(no_of_rows_changed == 1){
+                    publisher_id++;
+                }
                 System.out.println();
                 return true;
             }
             return false;
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -171,19 +217,20 @@ public class PublicationLibrary {
             return false;
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
 
     }
     /*
     Return a map of all the information the library currently stores on a specific publication, as
     identified by the publication key. The articles that this paper references will be returned with a
-    Map ke  y of “references” and a comma separated string of all the publication identifiers cited by
+    Map key of “references” and a comma separated string of all the publication identifiers cited by
     the article.
      */
     Map<String, String> getPublications ( String key )
     {
+        if(key == null || key.isEmpty()){
+            return null;
+        }
         return null;
     }
     /*
@@ -193,6 +240,9 @@ public class PublicationLibrary {
      */
     int authorCitations ( String author )
     {
+        if(author == null || author.isEmpty()){
+            return 0;
+        }
         return 0;
     }
 
@@ -205,6 +255,9 @@ public class PublicationLibrary {
     least otherCitations papers citing it directly.
      */
     Set<String> seminalPapers ( String area, int paperCitation, int otherCitations ){
+        if(area == null){
+            return null;
+        }
         return null;
     }
 
@@ -223,6 +276,9 @@ public class PublicationLibrary {
      */
     Set<String> collaborators( String author, int distance )
     {
+        if(author == null || author.isEmpty()){
+            return null;
+        }
         return null;
     }
     /*
@@ -232,6 +288,9 @@ public class PublicationLibrary {
      */
     Set<String> authorResearchAreas ( String author, int threshold )
     {
+        if(author == null || author.isEmpty()){
+            return null;
+        }
         return null;
     }
 }
